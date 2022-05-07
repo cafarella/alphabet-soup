@@ -19,7 +19,7 @@ pub struct GeneratorSettings<R: Rng, D: Distribution<Float>> {
 }
 
 impl<R: Rng, D: Distribution<Float>> GeneratorSettings<R, D> {
-    pub fn new(gen_type: GenerationType, rng: R, length_distribution: D) -> Self {
+    pub const fn new(gen_type: GenerationType, rng: R, length_distribution: D) -> Self {
         Self {
             gen_type,
             rng,
