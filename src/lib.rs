@@ -1,10 +1,9 @@
+use num_traits::cast::NumCast;
+
 use rand::Rng;
 use rand_distr::Distribution;
 
-#[cfg(all(feature = "f64"))]
-pub type Float = f64;
-#[cfg(not(feature = "f64"))]
-pub type Float = f32;
+use std::marker::PhantomData;
 
 pub enum GenerationType {
     LetterCountStrict(usize),
@@ -12,24 +11,26 @@ pub enum GenerationType {
     WordCount(usize),
 }
 
-pub struct GeneratorSettings<R: Rng, D: Distribution<Float>> {
+pub struct GeneratorSettings<R: Rng, D: Distribution<T>, T: NumCast> {
     pub gen_type: GenerationType,
     pub rng: R,
     pub length_distribution: D,
+    pub phantom_data: PhantomData<T>,
 }
 
-impl<R: Rng, D: Distribution<Float>> GeneratorSettings<R, D> {
+impl<R: Rng, D: Distribution<T>, T: NumCast> GeneratorSettings<R, D, T> {
     pub const fn new(gen_type: GenerationType, rng: R, length_distribution: D) -> Self {
         Self {
             gen_type,
             rng,
             length_distribution,
+            phantom_data: PhantomData,
         }
     }
 }
 
-pub fn generate_alphabet_soup<R: Rng, D: Distribution<Float>>(
-    settings: &mut GeneratorSettings<R, D>,
+pub fn generate_alphabet_soup<R: Rng, D: Distribution<T>, T: NumCast>(
+    settings: &mut GeneratorSettings<R, D, T>,
 ) -> String {
     let mut soup: Vec<char> = Vec::new();
 
@@ -39,7 +40,7 @@ pub fn generate_alphabet_soup<R: Rng, D: Distribution<Float>>(
             .collect()
     };
 
-    let get_word_length = |rng: &mut R, dist: &D| dist.sample(rng) as usize;
+    let get_word_length = |rng: &mut R, dist: &D| -> usize { dist.sample(rng).to_usize().unwrap() };
 
     match settings.gen_type {
         GenerationType::LetterCountStrict(letter_count) => {

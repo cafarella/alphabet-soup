@@ -65,13 +65,13 @@ impl RngCore for Rngs {
 }
 
 struct ApplicationSettings {
-    generator_settings: GeneratorSettings<Rngs, Distributions>,
+    generator_settings: GeneratorSettings<Rngs, Distributions, Float>,
     word_highlighting: bool,
 }
 
 impl ApplicationSettings {
     pub const fn new(
-        generator_settings: GeneratorSettings<Rngs, Distributions>,
+        generator_settings: GeneratorSettings<Rngs, Distributions, Float>,
         word_highlighting: bool,
     ) -> Self {
         Self {
